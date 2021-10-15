@@ -85,10 +85,11 @@ namespace lsdj
         char* name = new char[LSDJ_INSTRUMENT_NAME_LENGTH + 1];
         const char* name_bytes = lsdj_instrument_get_name(song, instrument);
 
-        for (int i;i < LSDJ_INSTRUMENT_NAME_LENGTH;i++)
+        for (int i = 0;i < LSDJ_INSTRUMENT_NAME_LENGTH;i++)
         {
             name[i] = name_bytes[i];
         }
+        name[LSDJ_INSTRUMENT_NAME_LENGTH] = '\0';
 
         std::string name_string(name);
         return name_string;
