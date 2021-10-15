@@ -38,6 +38,8 @@
 
 #include <ghc/filesystem.hpp>
 
+#include <lsdj/song.h>
+
 namespace lsdj
 {
     class InstExporter
@@ -57,6 +59,7 @@ namespace lsdj
         std::string output;
         
     private:
+        std::string get_instrument_name(const lsdj_song_t* song, uint8_t instrument);
     };
 }
 

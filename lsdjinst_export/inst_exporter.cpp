@@ -69,22 +69,28 @@ namespace lsdj
         const lsdj_project_t* project = lsdj_sav_get_project_const(sav, 0);
         const lsdj_song_t* song = lsdj_project_get_song_const(project);
 
-        for (int i = 0x1E7A;i < 0x1E7A + LSDJ_INSTRUMENT_COUNT * LSDJ_INSTRUMENT_BYTE_COUNT;i++)
-            std::cout << &song->bytes[i] << std::endl;;
-        // std::cout << lsdj_instrument_get_name(song, 0)[0] << std::endl;
-        // for (int i = 0;i < LSDJ_INSTRUMENT_COUNT;i++)
-        // {
-        //     std::cout << i << " ";
-        //     if (lsdj_instrument_is_allocated(song, i))
-        //     {
-        //         std::cout << lsdj_instrument_get_name(song, i) << std::endl;
-        //     }
-        //     else
-        //     {
-        //         std::cout << std::endl;
-        //     }
-        // }
+        for (int i = 0;i < LSDJ_INSTRUMENT_COUNT;i++)
+        {
+            if (lsdj_instrument_is_allocated(song, i))
+            {
+                std::cout << i << " " << get_instrument_name(song, i) << std::endl;
+            }
+        }
 
         return 0;
+    }
+
+    std::string InstExporter::get_instrument_name(const lsdj_song_t* song, uint8_t instrument)
+    {
+        char* name = new char[LSDJ_INSTRUMENT_NAME_LENGTH + 1];
+        const char* name_bytes = lsdj_instrument_get_name(song, instrument);
+
+        for (int i;i < LSDJ_INSTRUMENT_NAME_LENGTH;i++)
+        {
+            name[i] = name_bytes[i];
+        }
+
+        std::string name_string(name);
+        return name_string;
     }
 }
