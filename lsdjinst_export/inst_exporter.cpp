@@ -55,7 +55,8 @@ namespace lsdj
             return 1;
         }
 
-        std::cout << "Loading " << path.string() << "..." << std::endl;
+        if (verbose)
+            std::cout << "Loading " << path.string() << "..." << std::endl;
 
         lsdj_sav_t* sav = nullptr;
         lsdj_error_t error = lsdj_sav_read_from_file(path.string().c_str(), &sav, nullptr);
