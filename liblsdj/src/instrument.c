@@ -33,7 +33,6 @@
  
  */
 
-#include <stdio.h>
 #include "instrument.h"
 
 #include <assert.h>
@@ -65,9 +64,6 @@ const char* lsdj_instrument_get_name(const lsdj_song_t* song, uint8_t instrument
     const size_t index = INSTRUMENT_NAMES_OFFSET + (size_t)instrument * LSDJ_INSTRUMENT_NAME_LENGTH;
     assert(index < INSTRUMENT_NAMES_OFFSET + 320);
 
-    // const char name[LSDJ_INSTRUMENT_NAME_LENGTH];
-    // for(int i = 0;i < LSDJ_INSTRUMENT_NAME_LENGTH;i++)
-    //     name[i] = &
     return (const char*)(&song->bytes[index]);
 }
 
