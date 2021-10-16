@@ -45,10 +45,8 @@ namespace lsdj
     class InstExporter
     {
     public:
-        // int export_(const ghc::filesystem::path& path);
         int print(const ghc::filesystem::path& path);
-        
-    public:
+
         bool underscore = false;
         bool putInFolder = false;
         bool verbose = false;
@@ -59,7 +57,6 @@ namespace lsdj
         std::string output;
         
     private:
-        std::string get_instrument_name(const lsdj_song_t* song, uint8_t instrument);
     };
 }
 

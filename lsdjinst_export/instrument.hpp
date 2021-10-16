@@ -33,59 +33,33 @@
  
  */
 
-#include "inst_exporter.hpp"
+#ifndef LSDJ_INSTRUMENT_HPP
+#define LSDJ_INSTRUMENT_HPP
 
-#include <cassert>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <vector>
+#include <string>
 
 #include <lsdj/instrument.h>
-#include <lsdj/project.h>
-#include <lsdj/sav.h>
-#include "../common/common.hpp"
-#include "instrument.hpp"
+#include <lsdj/song.h>
 
 namespace lsdj
 {
-    int InstExporter::print(const ghc::filesystem::path& path)
+    class Instrument
     {
-        if (ghc::filesystem::is_directory(path))
-        {
-            std::cerr << "Loading multiple files from a directory is not yet supported...";
-            return 1;
-        }
+    public:
+        Instrument(const lsdj_song_t* song, uint8_t instrument);
 
-        if (verbose)
-            std::cout << "Loading " << path.string() << "..." << std::endl;
+        int id;
+        std::string name;
+        bool allocated = false;
 
-        lsdj_sav_t* sav = nullptr;
-        lsdj_error_t error = lsdj_sav_read_from_file(path.string().c_str(), &sav, nullptr);
-        if (error != LSDJ_SUCCESS)
-        {
-            std::cerr << handle_error(error);
-            return 1;
-        }
-        assert(sav != nullptr);
+        lsdj_instrument_type_t type;
+        std::string type_name;
 
-        // TODO process the rest of the "projects"
-        const lsdj_project_t* project = lsdj_sav_get_project_const(sav, 0);
-        const lsdj_song_t* song = lsdj_project_get_song_const(project);
+    private:
+        std::string get_instrument_name(const lsdj_song_t* song, uint8_t instrument);
+        std::string get_instrument_type_name(lsdj_instrument_type_t type);
 
-        std::vector<Instrument> instruments;
-        for (int i = 0;i < LSDJ_INSTRUMENT_COUNT;i++)
-        {
-            Instrument inst(song, i);
-
-            if (inst.allocated)
-            {
-                instruments.push_back(inst);
-
-                std::cout << inst.id << " " << inst.name << " " << inst.type_name << std::endl;
-            }
-        }
-
-        return 0;
-    }
+    };
 }
+
+#endif

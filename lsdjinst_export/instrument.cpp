@@ -33,59 +33,60 @@
  
  */
 
-#include "inst_exporter.hpp"
+#include "instrument.hpp"
 
-#include <cassert>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
 #include <vector>
 
 #include <lsdj/instrument.h>
-#include <lsdj/project.h>
 #include <lsdj/sav.h>
 #include "../common/common.hpp"
-#include "instrument.hpp"
 
 namespace lsdj
 {
-    int InstExporter::print(const ghc::filesystem::path& path)
+    Instrument::Instrument(const lsdj_song_t* song, uint8_t instrument)
     {
-        if (ghc::filesystem::is_directory(path))
+        id = instrument;
+        name = get_instrument_name(song, instrument);
+        allocated = lsdj_instrument_is_allocated(song, instrument);
+
+        type = lsdj_instrument_get_type(song, instrument);
+        type_name = get_instrument_type_name(type);
+    }
+
+    std::string Instrument::get_instrument_name(const lsdj_song_t* song, uint8_t instrument)
+    {
+        char* name = new char[LSDJ_INSTRUMENT_NAME_LENGTH + 1];
+        const char* name_bytes = lsdj_instrument_get_name(song, instrument);
+
+        for (int i = 0;i < LSDJ_INSTRUMENT_NAME_LENGTH;i++)
         {
-            std::cerr << "Loading multiple files from a directory is not yet supported...";
-            return 1;
+            name[i] = name_bytes[i];
         }
+        name[LSDJ_INSTRUMENT_NAME_LENGTH] = '\0';
 
-        if (verbose)
-            std::cout << "Loading " << path.string() << "..." << std::endl;
+        std::string name_string(name);
+        return name_string;
+    }
 
-        lsdj_sav_t* sav = nullptr;
-        lsdj_error_t error = lsdj_sav_read_from_file(path.string().c_str(), &sav, nullptr);
-        if (error != LSDJ_SUCCESS)
+    std::string Instrument::get_instrument_type_name(lsdj_instrument_type_t type)
+    {
+        switch(type)
         {
-            std::cerr << handle_error(error);
-            return 1;
+            case LSDJ_INSTRUMENT_TYPE_PULSE:
+                return "pulse";
+                break;
+            case LSDJ_INSTRUMENT_TYPE_WAVE:
+                return "wave";
+                break;
+            case LSDJ_INSTRUMENT_TYPE_KIT:
+                return "kit";
+                break;
+            case LSDJ_INSTRUMENT_TYPE_NOISE:
+                return "noise";
+                break;
+            default:
+                return "";
+                break;
         }
-        assert(sav != nullptr);
-
-        // TODO process the rest of the "projects"
-        const lsdj_project_t* project = lsdj_sav_get_project_const(sav, 0);
-        const lsdj_song_t* song = lsdj_project_get_song_const(project);
-
-        std::vector<Instrument> instruments;
-        for (int i = 0;i < LSDJ_INSTRUMENT_COUNT;i++)
-        {
-            Instrument inst(song, i);
-
-            if (inst.allocated)
-            {
-                instruments.push_back(inst);
-
-                std::cout << inst.id << " " << inst.name << " " << inst.type_name << std::endl;
-            }
-        }
-
-        return 0;
     }
 }
